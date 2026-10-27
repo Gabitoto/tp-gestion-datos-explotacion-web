@@ -1,0 +1,41 @@
+services:
+  # Servidor Redis (Base de datos Clave-Valor)
+  redis:
+    image: redis:7-alpine
+    container_name: imdb_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Aplicación Web Streamlit y Entorno de Ejecución del Pipeline
+  app:
+    build: .
+    container_name: imdb_app
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+      - ./app:/app/app
+      - ./pipeline.py:/app/pipeline.py
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: streamlit run app/Inicio.py --server.port=8501 --server.address=0.0.0.0
+
+volumes:
+  redis_data:
+    driver: local

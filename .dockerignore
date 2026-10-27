@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+.gitignore
+docs/
+.gemini/
+data/raw/*.tsv.gz
+data/processed/*.jsonl

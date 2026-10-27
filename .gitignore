@@ -1,0 +1,27 @@
+# Datos masivos (no subir a GitHub)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.part
+
+# Entorno virtual y dependencias
+.venv/
+venv/
+env/
+
+# Caché de Python y testing
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs y SO
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
