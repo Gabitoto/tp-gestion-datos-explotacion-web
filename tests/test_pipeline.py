@@ -33,10 +33,15 @@ def test_flag_invalido_sale_con_error():
         pipeline.construir_parser().parse_args(["--no-existe"])
 
 
+class Registro(list):
+    """Lista de llamadas que además guarda el resultado simulado de la auditoría."""
+    auditoria_ok = None
+
+
 @pytest.fixture
 def llamadas(monkeypatch):
     """Reemplaza cada fase por un registrador de llamadas."""
-    registro = []
+    registro = Registro()
     auditoria_ok = {"valor": True}
 
     monkeypatch.setattr(pipeline, "descargar_archivos_raw", lambda: registro.append("descargar"))
