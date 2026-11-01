@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar el código fuente y estructura del proyecto
 COPY src/ ./src/
 COPY app/ ./app/
+COPY .streamlit/ ./.streamlit/
 COPY pipeline.py .
 COPY data/ ./data/
 
