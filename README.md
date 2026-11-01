@@ -24,30 +24,30 @@ El proyecto está diseñado bajo una arquitectura modular y por capas, donde cad
 
 ```mermaid
 flowchart TD
-    subgraph 1. Ingesta y Exploración
-        RAW["Datasets Crudos IMDb\n(.tsv.gz en data/raw/)"]
-        EXP["Diagnóstico y Métricas\n(exploracion/)"]
+    subgraph S1 ["1. Ingesta y Exploración"]
+        RAW["Datasets Crudos IMDb<br>(.tsv.gz en data/raw/)"]
+        EXP["Diagnóstico y Métricas<br>(exploracion/)"]
         RAW --> EXP
     end
 
-    subgraph 2. Procesamiento Masivo (ETL)
-        RAW --> ETL["Pipeline ETL\n(src/etl/etl.py)"]
-        ETL -->|"Limpia, filtra, normaliza,\npondera y cruza nombres"| JSONL["peliculas_limpias.jsonl\n(data/processed/)"]
-        JSONL --> AUDIT["Auditoría y Validación\n(src/validacion/auditar_jsonl.py)"]
+    subgraph S2 ["2. Procesamiento Masivo (ETL)"]
+        RAW --> ETL["Pipeline ETL<br>(src/etl/etl.py)"]
+        ETL -->|"Limpia, filtra, normaliza,<br>pondera y cruza nombres"| JSONL["peliculas_limpias.jsonl<br>(data/processed/)"]
+        JSONL --> AUDIT["Auditoría y Validación<br>(src/validacion/auditar_jsonl.py)"]
     end
 
-    subgraph 3. Base Clave-Valor (Redis)
-        JSONL --> CARGA["Carga Masiva por Lotes\n(src/carga_redis/cargar_redis.py)"]
-        CARGA --> REDIS[("Redis Server\nHashes | Sets | ZSets | Counters")]
+    subgraph S3 ["3. Base Clave-Valor (Redis)"]
+        JSONL --> CARGA["Carga Masiva por Lotes<br>(src/carga_redis/cargar_redis.py)"]
+        CARGA --> REDIS[("Redis Server<br>Hashes | Sets | ZSets | Counters")]
     end
 
-    subgraph 4. Capa de Servicios y Presentación
-        REDIS --> QUERIES["Capa de Consultas / Vistas\n(src/consultas/vistas.py)"]
-        QUERIES --> UI["Aplicación Web Interactiva\n(Streamlit en app/Inicio.py)"]
+    subgraph S4 ["4. Capa de Servicios y Presentación"]
+        REDIS --> QUERIES["Capa de Consultas / Vistas<br>(src/consultas/vistas.py)"]
+        QUERIES --> UI["Aplicación Web Interactiva<br>(Streamlit en app/Inicio.py)"]
     end
 
-    subgraph 5. Aseguramiento de Calidad
-        TESTS["Suite de Tests (pytest + fakeredis)\nUnitarios | Integración | Smoke UI"]
+    subgraph S5 ["5. Aseguramiento de Calidad"]
+        TESTS["Suite de Tests (pytest + fakeredis)<br>Unitarios | Integración | Smoke UI"]
         TESTS -.->|Valida sin red ni BD externa| ETL
         TESTS -.->|Valida modelo clave-valor| REDIS
         TESTS -.->|Valida contratos| QUERIES
