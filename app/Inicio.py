@@ -21,7 +21,7 @@ st.markdown(
     'background:linear-gradient(120deg,rgba(245,197,24,.12),rgba(220,56,44,.18));">'
     '<img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" height="40" alt="IMDb">'
     '<span style="font-size:1.6rem;opacity:.6">＋</span>'
-    '<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Redis_Logo.svg" height="40" alt="Redis">'
+    '<img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/Redis_logo.svg" height="34" alt="Redis">'
     '<span style="opacity:.75">Títulos de cine consultados en milisegundos.</span></div>',
     unsafe_allow_html=True,
 )

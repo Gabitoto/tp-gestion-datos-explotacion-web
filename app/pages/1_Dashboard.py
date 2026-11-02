@@ -151,27 +151,53 @@ with fila2[0], st.container(border=True):
         )
 
 with fila2[1], st.container(border=True):
-    st.subheader("Mapa de calor: puntaje × género")
-    st.caption("Intensidad = cantidad de producciones en cada combinación (misma muestra).")
+    st.subheader("Mapa de calor: género × década")
+    st.caption("Color = puntaje promedio (calificación) por género en cada década.")
     if df_gen.empty:
         estilos.aviso_sin_datos()
     else:
-        etiquetas = ["0-2", "2-4", "4-6", "6-8", "8-10"]
-        mapa = df_gen.assign(
-            tramo=pd.cut(df_gen["calificacion"], [-0.01, 2, 4, 6, 8, 10], labels=etiquetas)
-        ).groupby(["genero", "tramo"], observed=True).size().reset_index(name="producciones")
-        celdas = alt.Chart(mapa).encode(
-            x=alt.X("tramo:O", sort=etiquetas, title="Tramo de puntaje"),
-            y=alt.Y("genero:N", title=None),
-        )
-        st.altair_chart(
-            (celdas.mark_rect(cornerRadius=3).encode(
-                color=alt.Color("producciones:Q", scale=alt.Scale(scheme="reds"), title="Producciones"),
-                tooltip=["genero", "tramo", "producciones"],
-            ) + celdas.mark_text(fontSize=10).encode(
-                text="producciones:Q",
-                color=alt.condition(alt.datum.producciones > mapa["producciones"].max() * 0.55,
-                                    alt.value("white"), alt.value("#dddddd")),
-            )).properties(height=420),
-            width="stretch",
-        )
+        df_calor = df_gen[df_gen["anio"] > 0].copy()
+        if df_calor.empty:
+            estilos.aviso_sin_datos()
+        else:
+            df_calor["decada_num"] = (df_calor["anio"] // 10) * 10
+            df_calor["decada"] = df_calor["decada_num"].astype(str) + "s"
+            mapa = (
+                df_calor.groupby(["genero", "decada", "decada_num"], as_index=False)
+                .agg(
+                    puntaje_promedio=("calificacion", "mean"),
+                    producciones=("calificacion", "count"),
+                )
+            )
+            mapa["puntaje_promedio"] = mapa["puntaje_promedio"].round(2)
+            decadas_ordenadas = sorted(
+                mapa["decada"].unique(),
+                key=lambda d: int(d.rstrip("s")) if d.rstrip("s").isdigit() else 0,
+            )
+            celdas = alt.Chart(mapa).encode(
+                x=alt.X("decada:O", sort=decadas_ordenadas, title="Década"),
+                y=alt.Y("genero:N", title="Género"),
+            )
+            st.altair_chart(
+                (celdas.mark_rect(cornerRadius=3).encode(
+                    color=alt.Color(
+                        "puntaje_promedio:Q",
+                        scale=alt.Scale(zero=False, scheme="inferno"),
+                        title="Puntaje prom.",
+                    ),
+                    tooltip=[
+                        alt.Tooltip("genero:N", title="Género"),
+                        alt.Tooltip("decada:O", title="Década"),
+                        alt.Tooltip("puntaje_promedio:Q", format=".2f", title="Puntaje promedio"),
+                        alt.Tooltip("producciones:Q", format=",", title="Producciones"),
+                    ],
+                ) + celdas.mark_text(fontSize=10, fontWeight="bold").encode(
+                    text=alt.Text("puntaje_promedio:Q", format=".1f"),
+                    color=alt.condition(
+                        alt.datum.puntaje_promedio > mapa["puntaje_promedio"].mean(),
+                        alt.value("white"),
+                        alt.value("#d0d0d0"),
+                    ),
+                )).properties(height=420),
+                width="stretch",
+            )
