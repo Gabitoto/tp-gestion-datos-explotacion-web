@@ -26,6 +26,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PYTHONUNBUFFERED=1
+      - OMDB_API_KEY=f1b72fd7
     volumes:
       - ./data:/app/data
       - ./src:/app/src

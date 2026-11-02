@@ -7,7 +7,7 @@ import pandas as pd
 import streamlit as st
 
 from src.consultas import vistas
-from src.ui import estilos
+from src.ui import estilos, posters
 
 estilos.preparar_pagina(
     "Explorador", "🔎",
@@ -27,22 +27,25 @@ DUR_MAX = 400
 def tarjeta(f: dict):
     """Tarjeta visual de una producción."""
     with st.container(border=True):
-        st.markdown(f'<div class="ficha-titulo">{f.get("titulo", "—")}</div>'
-                    f'<div class="ficha-meta">{f.get("tipo", "")} · {f["anio"] or "s/d"} · '
-                    f'{str(f["duracion"]) + " min" if f["duracion"] else "duración s/d"}</div>',
-                    unsafe_allow_html=True)
-        c1, c2 = st.columns([1, 2])
-        c1.markdown(f'<div class="ficha-nota">⭐ {f["calificacion"]:.1f}</div>', unsafe_allow_html=True)
-        c2.markdown(f'<div class="ficha-linea">🗳️ {f["votos"]:,} votos</div>'
-                    f'<div class="ficha-linea">⚖️ ponderado {f["puntaje_ponderado"]:.2f}</div>',
-                    unsafe_allow_html=True)
-        st.markdown(estilos.badges_generos(f["generos"]), unsafe_allow_html=True)
-        st.markdown(f'<div class="ficha-linea">🎬 {f.get("director", "Desconocido")}</div>'
-                    f'<div class="ficha-linea">🎭 {f.get("actores", "Desconocido")}</div>'
-                    f'<div class="ficha-linea" style="opacity:.5">{f.get("id", "")}</div>',
-                    unsafe_allow_html=True)
-        with st.expander("Ver JSON completo"):
-            st.json({k: v for k, v in f.items() if k != "score"})
+        col_img, col_datos = st.columns([1, 3])
+        col_img.image(posters.url_poster(f.get("id", "")), use_container_width=True)
+        with col_datos:
+            st.markdown(f'<div class="ficha-titulo">{f.get("titulo", "—")}</div>'
+                        f'<div class="ficha-meta">{f.get("tipo", "")} · {f["anio"] or "s/d"} · '
+                        f'{str(f["duracion"]) + " min" if f["duracion"] else "duración s/d"}</div>',
+                        unsafe_allow_html=True)
+            c1, c2 = st.columns([1, 2])
+            c1.markdown(f'<div class="ficha-nota">⭐ {f["calificacion"]:.1f}</div>', unsafe_allow_html=True)
+            c2.markdown(f'<div class="ficha-linea">🗳️ {f["votos"]:,} votos</div>'
+                        f'<div class="ficha-linea">⚖️ ponderado {f["puntaje_ponderado"]:.2f}</div>',
+                        unsafe_allow_html=True)
+            st.markdown(estilos.badges_generos(f["generos"]), unsafe_allow_html=True)
+            st.markdown(f'<div class="ficha-linea">🎬 {f.get("director", "Desconocido")}</div>'
+                        f'<div class="ficha-linea">🎭 {f.get("actores", "Desconocido")}</div>'
+                        f'<div class="ficha-linea" style="opacity:.5">{f.get("id", "")}</div>',
+                        unsafe_allow_html=True)
+            with st.expander("Ver JSON completo"):
+                st.json({k: v for k, v in f.items() if k != "score"})
 
 
 tab_busqueda, tab_id = st.tabs(["🧭 Búsqueda avanzada", "🆔 Por ID"])

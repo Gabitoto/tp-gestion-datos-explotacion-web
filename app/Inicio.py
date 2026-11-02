@@ -15,6 +15,17 @@ estilos.preparar_pagina(
     ruta="Cine en Redis",
 )
 
+st.markdown(
+    '<div style="display:flex;align-items:center;gap:18px;padding:14px 22px;margin-bottom:1.2rem;'
+    'border-radius:16px;border:1px solid rgba(255,255,255,.06);'
+    'background:linear-gradient(120deg,rgba(245,197,24,.12),rgba(220,56,44,.18));">'
+    '<img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" height="40" alt="IMDb">'
+    '<span style="font-size:1.6rem;opacity:.6">＋</span>'
+    '<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Redis_Logo.svg" height="40" alt="Redis">'
+    '<span style="opacity:.75">Títulos de cine consultados en milisegundos.</span></div>',
+    unsafe_allow_html=True,
+)
+
 try:
     total = vistas.total_peliculas()
     generos = vistas.conteo_por_genero()
